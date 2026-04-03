@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Are We Claude Maxxing?</title>
+    <meta property="og:title" content="Are We Claude Maxxing?">
+    <meta property="og:description" content="Skills, MCPs, Context Engineering & the Ralph Loop. Maximize Claude Code.">
+    <meta property="og:image" content="https://claudemaxxing.org/og-image.png">
+    <meta property="og:url" content="https://claudemaxxing.org">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Are We Claude Maxxing?">
+    <meta name="twitter:description" content="Skills, MCPs, Context Engineering & the Ralph Loop. Maximize Claude Code.">
+    <meta name="twitter:image" content="https://claudemaxxing.org/og-image.png">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0a0a0a;
+            --paper: #ddd9cf;
+            --accent: #ff3d00;
+            --highlight: #c6ff00;
+            --muted: #6b6b6b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--ink); color: var(--paper);
+            overflow-x: hidden; cursor: crosshair;
+        }
+
+        .scroll-progress {
+            position: fixed; top: 0; left: 0; height: 3px; z-index: 1001;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            width: 0%; transition: width 0.1s linear;
+        }
+
+        section {
+            min-height: 100vh; scroll-snap-align: start;
+            position: relative; display: flex;
+            align-items: center; justify-content: center;
+            padding: 6rem 4rem; overflow: hidden;
+        }
+
+        .slide-content {
+            max-width: 800px; width: 100%;
+        }
+        .slide-content h2 {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 400; line-height: 1.1;
+            margin-bottom: 2rem; letter-spacing: -0.02em;
+        }
+        .slide-content h2 em {
+            font-style: italic; color: var(--accent);
+            background-image: linear-gradient(var(--accent), var(--accent));
+            background-size: 0% 3px; background-position: left bottom;
+            background-repeat: no-repeat; padding-bottom: 4px;
+            transition: background-size 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+        }
+        .slide-content.visible h2 em { background-size: 100% 3px; }
+        .slide-content p {
+            font-size: 0.95rem; line-height: 1.9; margin-bottom: 1.5rem; opacity: 0.85;
+        }
+
+        .dark .slide-content h2 em { background-image: linear-gradient(var(--accent), var(--accent)); }
+        .accent-bg .slide-content h2 em,
+        .highlight-bg .slide-content h2 em {
+            color: var(--paper);
+            background-image: linear-gradient(var(--paper), var(--paper));
+        }
+
+        .section-number {
+            font-family: 'Syne', sans-serif;
+            font-size: 10rem; font-weight: 800; line-height: 1;
+            opacity: 0; position: absolute; top: 2rem; left: 3rem;
+            transform: translateX(-60px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .section-number.visible { opacity: 0.1; transform: translateX(0); }
+
+        .light { background: var(--paper); color: var(--ink); }
+        .dark { background: var(--ink); color: var(--paper); }
+        .accent-bg { background: var(--accent); color: var(--paper); }
+        .highlight-bg { background: var(--highlight); color: var(--ink); }
+        .light .slide-content h2 em { color: var(--accent); }
+
+        .code-block {
+            background: var(--ink); color: var(--highlight);
+            padding: 2rem; font-family: 'Space Mono', monospace;
+            font-size: 0.8rem; line-height: 1.8; position: relative;
+            overflow: hidden; margin-top: 2rem;
+        }
+        .code-block::before { content: '>'; position: absolute; top: 2rem; left: 1rem; color: var(--accent); }
+        .code-block[style*="display:flex"]::before { display: none; }
+        .code-block code { padding-left: 1.5rem; display: block; }
+        .light .code-block { background: var(--ink); color: var(--highlight); }
+        .dark .code-block { background: var(--paper); color: var(--ink); }
+        .dark .code-block::before { color: var(--accent); }
+        .code-block.typing::after { content: '\2588'; animation: blink 0.8s step-end infinite; color: var(--accent); }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .big-quote {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-style: italic; line-height: 1.3;
+            max-width: 900px; text-align: center; padding: 4rem;
+            opacity: 0; transform: scale(0.9) translateY(30px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .big-quote.visible { opacity: 1; transform: scale(1) translateY(0); }
+        .big-quote::before {
+            content: '\2193'; display: block; font-style: normal;
+            font-size: 6rem; line-height: 0.5; opacity: 0; margin-bottom: 1.5rem;
+            transform: translateY(-20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+        }
+        .big-quote.visible::before { opacity: 0.3; transform: translateY(0); }
+        .big-quote.no-arrow::before { display: none; }
+
+        /* Hero */
+        .hero { background: var(--ink); flex-direction: row; text-align: left; gap: 4rem; }
+        .hero::before {
+            content: ''; position: absolute; inset: 0;
+            background:
+                radial-gradient(circle at 20% 80%, var(--accent) 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, var(--highlight) 0%, transparent 30%);
+            opacity: 0.15; animation: pulse 8s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity: 0.15; } 50% { opacity: 0.25; } }
+        .hero-content { position: relative; z-index: 1; max-width: 1200px; }
+        .hero h1 {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 400; line-height: 0.9;
+            letter-spacing: -0.03em; margin-bottom: 2rem;
+        }
+        .hero h1 span { display: block; color: var(--accent); font-style: italic; }
+        .hero p {
+            font-size: 1rem; max-width: 600px;
+            margin: 0 0 3rem; opacity: 0.7; line-height: 1.8;
+        }
+        .hero h1 .letter {
+            display: inline-block; opacity: 0;
+            transform: translateY(80px) rotateX(40deg);
+            animation: letterDrop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes letterDrop { to { opacity: 1; transform: translateY(0) rotateX(0deg); } }
+        .hero h1 span .letter {
+            color: var(--accent);
+            animation: letterDropAccent 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes letterDropAccent {
+            0% { opacity: 0; transform: translateY(80px) rotateX(40deg); color: var(--highlight); }
+            100% { opacity: 1; transform: translateY(0) rotateX(0deg); color: var(--accent); }
+        }
+        .fade-in { opacity: 0; transform: translateY(30px); animation: fadeIn 0.8s ease forwards; }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        .stagger-1 { animation-delay: 0.8s; }
+
+        .hero-image {
+            width: auto; height: 70vh; max-height: 600px; border-radius: 8px;
+            object-fit: contain; flex-shrink: 0;
+            border: 3px solid var(--accent);
+            opacity: 0; animation: fadeIn 1s ease 0.3s forwards;
+        }
+        .minecraft-steve {
+            width: auto; height: 220px;
+            image-rendering: pixelated;
+            margin: 2rem auto; display: block;
+            filter: drop-shadow(0 4px 20px rgba(255,61,0,0.3));
+        }
+
+        .orb {
+            position: absolute; border-radius: 50%;
+            pointer-events: none; filter: blur(80px);
+            animation: orbFloat 20s ease-in-out infinite;
+        }
+        .orb-1 { width: 500px; height: 500px; background: var(--accent); top: -10%; left: -10%; opacity: 0.08; animation-duration: 25s; }
+        .orb-2 { width: 400px; height: 400px; background: var(--highlight); bottom: -15%; right: -5%; opacity: 0.06; animation-duration: 18s; animation-delay: -5s; }
+        .orb-3 { width: 300px; height: 300px; background: #6366f1; top: 40%; right: 20%; opacity: 0.05; animation-duration: 22s; animation-delay: -10s; }
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -40px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(40px, 30px) scale(1.05); }
+        }
+
+        .scroll-indicator {
+            position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%);
+            font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+            animation: bounce 2s infinite, fadeOutScroll 1s 4s forwards;
+        }
+        @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(10px); } }
+        @keyframes fadeOutScroll { to { opacity: 0; } }
+
+        .reveal-up {
+            opacity: 0; transform: translateY(50px);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-up.visible { opacity: 1; transform: translateY(0); }
+
+        .cta-section {
+            background: linear-gradient(135deg, var(--ink) 0%, #1a1a2e 100%);
+            text-align: center; flex-direction: column; gap: 2rem;
+        }
+        .cta-section h2 {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(3rem, 7vw, 6rem);
+            font-weight: 400; line-height: 1; margin-bottom: 2rem;
+        }
+        .cta-section h2 span { color: var(--highlight); font-style: italic; }
+        .cta-button {
+            display: inline-block; background: var(--accent); color: var(--paper);
+            padding: 1.25rem 3rem; text-decoration: none;
+            font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden;
+        }
+        .cta-button::before {
+            content: ''; position: absolute; inset: -2px;
+            background: linear-gradient(90deg, var(--accent), var(--highlight), var(--accent));
+            background-size: 200% 100%; z-index: -1; opacity: 0;
+            animation: shimmer 3s linear infinite; transition: opacity 0.4s;
+        }
+        @keyframes shimmer { to { background-position: 200% 0; } }
+        .cta-button:hover::before { opacity: 1; }
+        .cta-button:hover {
+            background: var(--highlight); color: var(--ink);
+            transform: scale(1.05); box-shadow: 0 0 40px rgba(198, 255, 0, 0.3);
+        }
+
+        .decoration { position: absolute; pointer-events: none; }
+        .decoration.circle { width: 400px; height: 400px; border: 1px solid currentColor; border-radius: 50%; opacity: 0.1; }
+
+        /* ====== CoVe ACRONYM STYLES ====== */
+        .cove-acronym {
+            display: flex; flex-direction: column; gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .cove-step {
+            display: flex; align-items: flex-start; gap: 1.5rem;
+            opacity: 0; transform: translateX(-40px);
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .cove-step.visible { opacity: 1; transform: translateX(0); }
+        .cove-step:nth-child(2) { transition-delay: 0.15s; }
+        .cove-step:nth-child(3) { transition-delay: 0.3s; }
+        .cove-step:nth-child(4) { transition-delay: 0.45s; }
+        .cove-letter {
+            font-family: 'Syne', sans-serif;
+            font-size: 3.5rem; font-weight: 800;
+            line-height: 1; color: var(--accent);
+            min-width: 60px; text-align: center;
+        }
+        .cove-desc h3 {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.5rem; font-weight: 400; margin-bottom: 0.3rem;
+        }
+        .cove-desc p {
+            font-size: 0.8rem !important; opacity: 0.7 !important; margin-bottom: 0 !important;
+        }
+
+        /* ====== FLOW DIAGRAM ====== */
+        .flow-diagram {
+            display: flex; align-items: center; justify-content: center;
+            gap: 0; margin: 2.5rem 0; flex-wrap: wrap;
+        }
+        .flow-node {
+            background: var(--accent); color: var(--paper);
+            padding: 0.75rem 1.25rem; font-family: 'Syne', sans-serif;
+            font-weight: 700; font-size: 0.75rem; text-transform: uppercase;
+            letter-spacing: 0.05em; white-space: nowrap;
+        }
+        .flow-arrow {
+            font-size: 1.5rem; padding: 0 0.5rem; opacity: 0.5;
+        }
+        .light .flow-arrow { color: var(--ink); }
+        .dark .flow-arrow { color: var(--paper); }
+
+        /* ====== STAT GRID ====== */
+        .stat-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 2rem; margin-top: 2rem;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem; font-weight: 800;
+            color: var(--accent); line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 0.1em; opacity: 0.6; margin-top: 0.5rem;
+        }
+
+        /* ====== PORTAL GRID ====== */
+        .portal-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem; margin-top: 2rem;
+        }
+        .portal-card {
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 1.5rem; position: relative;
+        }
+        .light .portal-card { border-color: rgba(0,0,0,0.15); }
+        .portal-card h4 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700; font-size: 0.85rem;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            margin-bottom: 0.5rem; color: var(--accent);
+        }
+        .portal-card p {
+            font-size: 0.75rem !important; line-height: 1.6 !important;
+            opacity: 0.7 !important; margin-bottom: 0 !important;
+        }
+
+        /* ====== GSD PHASES ====== */
+        .phase-row {
+            display: flex; gap: 0; margin: 2rem 0;
+        }
+        .phase-block {
+            flex: 1; padding: 1.5rem 1rem; text-align: center;
+            border-right: 1px solid rgba(0,0,0,0.1);
+        }
+        .phase-block:last-child { border-right: none; }
+        .phase-block .num {
+            font-family: 'Syne', sans-serif; font-weight: 800;
+            font-size: 1.5rem; color: var(--accent); margin-bottom: 0.25rem;
+        }
+        .phase-block .label {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.1rem;
+        }
+        .phase-block .sub {
+            font-size: 0.65rem; opacity: 0.5; margin-top: 0.25rem;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 768px) {
+            section { padding: 4rem 2rem; }
+            .slide-content { max-width: 100%; }
+            .hero { flex-direction: column; text-align: center; gap: 2rem; }
+            .hero-image { height: 40vh; max-height: 300px; }
+            .cove-letter { font-size: 2.5rem; min-width: 40px; }
+            .stat-grid { grid-template-columns: 1fr; }
+            .portal-grid { grid-template-columns: 1fr; }
+            .phase-row { flex-direction: column; }
+            .phase-block { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.1); }
+            .flow-diagram { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <header style="position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;">
+        <a href="https://lyratechnologies.com.au/" target="_blank"><img src="Logo White.png" alt="Lyra" style="height:28px;width:auto;"></a>
+        <a href="#my-skills" style="font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--paper);text-decoration:none;padding:0.5rem 1.25rem;background:var(--accent);border:1px solid var(--accent);transition:all 0.3s;">My Skills</a>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <img src="steve-jobs.jpg" alt="Steve Jobs" class="hero-image" style="position:relative;z-index:1;">
+        <div class="hero-content">
+            <h1>
+                <span class="hero-line" data-text="Are we">Are we</span>
+                <span><span class="hero-line" data-text="Claude Maxxing?">Claude Maxxing?</span></span>
+            </h1>
+            <p class="fade-in stagger-1">Skills, MCPs, context engineering, and autonomous loops. This is how you get the most out of Claude Code.</p>
+        </div>
+        <div class="scroll-indicator">Scroll to explore</div>
+    </section>
+
+    <!-- 01: THE ANALOGY -->
+    <section class="light">
+        <span class="section-number">01</span>
+        <div class="slide-content reveal-up">
+            <h2>Steve needs <em>diamond armour.</em></h2>
+            <img src="minecraft-steve.png" alt="Minecraft Steve" class="minecraft-steve">
+            <p>Claude is Steve from Minecraft. Capable alone -- but with the right gear, unstoppable.</p>
+            <div class="flow-diagram">
+                <div class="flow-node">Skills</div>
+                <span class="flow-arrow">+</span>
+                <div class="flow-node">MCPs</div>
+                <span class="flow-arrow">+</span>
+                <div class="flow-node">Context</div>
+                <span class="flow-arrow">+</span>
+                <div class="flow-node">Verification</div>
+                <span class="flow-arrow">=</span>
+                <div class="flow-node" style="background:var(--highlight);color:var(--ink);">Diamond Armour</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 02: SKILLS -->
+    <section class="dark">
+        <span class="section-number">02</span>
+        <div class="slide-content reveal-up">
+            <h2>What is a <em>skill?</em></h2>
+            <img src="mc-diamond-armour.png" alt="Diamond Armour" style="height:120px;image-rendering:pixelated;margin-bottom:1rem;">
+            <p>A reusable prompt template, invoked via slash command. Loaded on-demand -- doesn't waste context. Think of skills as equippable armour pieces.</p>
+            <div class="flow-diagram">
+                <div class="flow-node">Slash command</div>
+                <span class="flow-arrow">&rarr;</span>
+                <div class="flow-node">Load prompt</div>
+                <span class="flow-arrow">&rarr;</span>
+                <div class="flow-node">Execute</div>
+                <span class="flow-arrow">&rarr;</span>
+                <div class="flow-node" style="background:var(--highlight);color:var(--ink);">Verified output</div>
+            </div>
+            <div class="portal-grid" style="margin-top:2rem;">
+                <div class="portal-card">
+                    <h4>Remotion</h4>
+                    <p>Describe a video in natural language. Claude writes React components that render each frame — animations, subtitles, TTS audio. Full video from a prompt.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>Anthropic Official</h4>
+                    <p>Document skills: /pdf, /pptx, /xlsx, /docx. Create and edit Office docs and PDFs directly from Claude Code.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 03: HOW SKILLS LOAD -->
+    <section class="light">
+        <span class="section-number">03</span>
+        <div class="slide-content reveal-up">
+            <h2>How skills <em>load.</em></h2>
+            <p>Progressive disclosure. Two levels — only what's needed enters context.</p>
+            <div class="phase-row" style="border:1px solid rgba(0,0,0,0.15);">
+                <div class="phase-block" style="border-color:rgba(0,0,0,0.1);">
+                    <div class="num">1</div>
+                    <div class="label">Metadata</div>
+                    <div class="sub">Name + description only · ~100 tokens/skill · loads at startup</div>
+                </div>
+                <div class="phase-block" style="border-color:rgba(0,0,0,0.1);">
+                    <div class="num">2</div>
+                    <div class="label">Full Prompt</div>
+                    <div class="sub">Complete instructions · loads on invoke only</div>
+                </div>
+            </div>
+            <div class="code-block" style="margin-top:1.5rem;font-size:0.75rem;">
+                <code>
+<span style="color:var(--accent);"># SKILL.md — only frontmatter loads at startup</span><br>
+---<br>
+name: my-skill<br>
+description: When to use this skill<br>
+---<br><br>
+<span style="color:var(--accent);"># Body loads on-demand when /my-skill is invoked</span><br>
+Full instructions, examples, templates...
+                </code>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUOTE -->
+    <section class="accent-bg" style="flex-direction:column;gap:2rem;">
+        <img src="axe-quote.jpg" alt="Axe sharpening" style="max-width:500px;width:90%;border-radius:8px;" class="reveal-up">
+        <div class="big-quote">
+            Give me six hours to implement a feature and I will spend the first four writing the prompt.
+        </div>
+    </section>
+
+    <!-- 04: CONTEXT -->
+    <section class="dark">
+        <span class="section-number">04</span>
+        <div class="slide-content reveal-up">
+            <h2>Context is <em>everything.</em></h2>
+            <img src="mc-crafting-table.png" alt="Crafting Table" style="height:80px;image-rendering:pixelated;margin-bottom:1rem;">
+            <p>Humans are the bottleneck. Claude's output quality is proportional to what you give it.</p>
+            <div class="code-block">
+                <code>
+# CLAUDE.md — your project's persistent memory<br><br>
+- Build: npm run build<br>
+- Test: npm run test<br>
+- Style: ES modules, not CommonJS<br>
+- Architecture: src/features/[name]/<br>
+- Always run tests before committing
+                </code>
+            </div>
+        </div>
+    </section>
+
+    <!-- 05: CoVe ACRONYM -->
+    <section class="light">
+        <span class="section-number">05</span>
+        <div class="slide-content reveal-up">
+            <h2>The <em>CoVe</em> model.</h2>
+            <img src="mc-enchanting-table.gif" alt="Enchanting Table" style="height:80px;image-rendering:pixelated;margin-bottom:1rem;">
+            <p>Chain-of-Verification. Claude tests its own code.</p>
+
+            <div class="cove-acronym">
+                <div class="cove-step">
+                    <div class="cove-letter">C</div>
+                    <div class="cove-desc">
+                        <h3>Create</h3>
+                        <p>Generate initial response from the prompt</p>
+                    </div>
+                </div>
+                <div class="cove-step">
+                    <div class="cove-letter">o</div>
+                    <div class="cove-desc">
+                        <h3>Outline</h3>
+                        <p>Decompose into independent verification questions</p>
+                    </div>
+                </div>
+                <div class="cove-step">
+                    <div class="cove-letter">V</div>
+                    <div class="cove-desc">
+                        <h3>Verify</h3>
+                        <p>Sub-agents check each claim against docs & codebase</p>
+                    </div>
+                </div>
+                <div class="cove-step">
+                    <div class="cove-letter">e</div>
+                    <div class="cove-desc">
+                        <h3>Emit</h3>
+                        <p>Synthesize corrected, verified output</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="stat-number">+28%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Stages</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Vibes</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 06: CoVe PROMPT BREAKDOWN -->
+    <section class="dark">
+        <span class="section-number">06</span>
+        <div class="slide-content reveal-up">
+            <h2>A CoVe prompt, <em>dissected.</em></h2>
+            <div class="code-block" style="font-size:0.75rem;">
+                <code>
+<span style="color:var(--accent);"># STAGE 1: CREATE</span><br>
+Implement a Stripe checkout flow for our<br>
+Next.js app with price ID lookup.<br><br>
+<span style="color:var(--accent);"># STAGE 2: OUTLINE (auto-generated)</span><br>
+- Does stripe.prices.retrieve() exist in v14?<br>
+- Is the redirect URL using the App Router pattern?<br>
+- Does the webhook verify the Stripe signature?<br>
+- Are environment variables named correctly?<br><br>
+<span style="color:var(--accent);"># STAGE 3: VERIFY (parallel checks)</span><br>
+✓ stripe.prices.retrieve — confirmed in Stripe SDK<br>
+✗ redirect used pages/ pattern — fixed to app/<br>
+✓ webhook signature verification present<br>
+✗ STRIPE_KEY should be STRIPE_SECRET_KEY — fixed<br><br>
+<span style="color:var(--accent);"># STAGE 4: EMIT</span><br>
+Final code with all 4 corrections applied.
+                </code>
+            </div>
+        </div>
+    </section>
+
+    <!-- INVOKE SLIDE -->
+    <section class="highlight-bg" style="flex-direction:column;gap:2rem;">
+        <div class="big-quote no-arrow" style="font-style:normal;font-family:'Space Mono',monospace;font-size:clamp(1.5rem,3.5vw,2.5rem);padding-bottom:0;">
+            /rnv "implement stripe checkout"
+        </div>
+        <p class="reveal-up" style="font-size:0.85rem;max-width:600px;text-align:center;line-height:1.8;opacity:0.8;">
+            Your 5-word prompt gets wrapped in the full CoVe verification framework. The skill modifies how Claude processes your request — your prompt becomes the input to Stage 1, and the skill's instructions drive the remaining three stages autonomously.
+        </p>
+    </section>
+
+    <!-- 07: VISUAL TESTING -->
+    <section class="dark">
+        <span class="section-number">07</span>
+
+        <div class="slide-content reveal-up">
+            <h2>Give Claude <em>eyes.</em></h2>
+            <p>Playwright MCP lets Claude control a browser. Build, screenshot, iterate -- autonomously.</p>
+            <div class="flow-diagram">
+                <div class="flow-node">Build UI</div>
+                <span class="flow-arrow">&rarr;</span>
+                <div class="flow-node">Screenshot</div>
+                <span class="flow-arrow">&rarr;</span>
+                <div class="flow-node">Evaluate</div>
+                <span class="flow-arrow">&rarr;</span>
+                <div class="flow-node">Fix</div>
+                <span class="flow-arrow">&circlearrowleft;</span>
+            </div>
+            <p>Playwright MCP gives Claude a real browser it can control and observe.</p>
+        </div>
+    </section>
+
+    <!-- 08: CONTEXT ROT -->
+    <section class="light">
+        <span class="section-number">08</span>
+        <div class="slide-content reveal-up">
+            <h2>The enemy: <em>context rot.</em></h2>
+            <img src="mc-creeper.png" alt="Creeper" style="height:120px;image-rendering:pixelated;margin-bottom:1rem;">
+            <p>As the context window fills, quality degrades. Earlier instructions get buried. Output falls off a cliff.</p>
+            <div style="margin:2rem 0;text-align:center;">
+                <svg viewBox="0 0 400 120" style="max-width:500px;width:100%;">
+                    <defs>
+                        <linearGradient id="rotGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#c6ff00"/>
+                            <stop offset="60%" stop-color="#ff3d00"/>
+                            <stop offset="100%" stop-color="#0a0a0a"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="10" y="15" fill="#6b6b6b" font-family="Space Mono" font-size="9">QUALITY</text>
+                    <text x="330" y="115" fill="#6b6b6b" font-family="Space Mono" font-size="9">TOKENS</text>
+                    <path d="M 30 20 Q 150 25 250 60 T 390 105" stroke="url(#rotGrad)" fill="none" stroke-width="3"/>
+                    <line x1="30" y1="20" x2="30" y2="110" stroke="#6b6b6b" stroke-width="0.5"/>
+                    <line x1="30" y1="110" x2="390" y2="110" stroke="#6b6b6b" stroke-width="0.5"/>
+                </svg>
+            </div>
+            <p>We need systems that manage context automatically.</p>
+        </div>
+    </section>
+
+    <!-- 09: GSD OVERVIEW -->
+    <section class="dark">
+        <span class="section-number">09</span>
+        <div class="slide-content reveal-up">
+            <h2>Get Shit <em>Done.</em></h2>
+            <img src="mc-beacon.png" alt="Beacon" style="height:80px;image-rendering:pixelated;margin-bottom:1rem;">
+            <p>A context-engineering skillset. 9,200+ GitHub stars. Used at Amazon, Google, Shopify, Webflow.</p>
+            <div class="phase-row" style="border:1px solid rgba(255,255,255,0.15);">
+                <div class="phase-block" style="border-color:rgba(255,255,255,0.1);">
+                    <div class="num">1</div>
+                    <div class="label">Discuss</div>
+                    <div class="sub">Lock decisions<br>Kill ambiguity</div>
+                </div>
+                <div class="phase-block" style="border-color:rgba(255,255,255,0.1);">
+                    <div class="num">2</div>
+                    <div class="label">Plan</div>
+                    <div class="sub">4 parallel researchers<br>XML task plans</div>
+                </div>
+                <div class="phase-block" style="border-color:rgba(255,255,255,0.1);">
+                    <div class="num">3</div>
+                    <div class="label">Execute</div>
+                    <div class="sub">Fresh 200K window<br>Atomic commits</div>
+                </div>
+                <div class="phase-block" style="border-color:rgba(255,255,255,0.1);">
+                    <div class="num">4</div>
+                    <div class="label">Verify</div>
+                    <div class="sub">UAT walkthrough<br>Auto-diagnose failures</div>
+                </div>
+            </div>
+            <div class="code-block" style="margin-top:1.5rem;font-size:0.75rem;">
+                <code>
+$ npx get-shit-done-cc --global<br><br>
+/gsd:new-project<br>
+/gsd:discuss-phase 1<br>
+/gsd:plan-phase 1<br>
+/gsd:execute-plan 1<br>
+/gsd:verify-work 1
+                </code>
+            </div>
+        </div>
+    </section>
+
+    <!-- 09b: GSD UNDER THE HOOD -->
+    <section class="light">
+        <div class="slide-content reveal-up">
+            <h2>GSD under <em>the hood.</em></h2>
+            <p>All state lives in files, not in context. Sessions are resumable. Context stays clean.</p>
+            <div class="portal-grid">
+                <div class="portal-card">
+                    <h4>PROJECT.md</h4>
+                    <p>High-level vision. Always loaded into context.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>ROADMAP.md</h4>
+                    <p>Phases, completion status, release tags.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>STATE.md</h4>
+                    <p>Session memory. Decisions, blockers, current position. The handoff document.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>PLAN.md</h4>
+                    <p>Executable XML task plans. 2-3 atomic tasks per plan — not docs, but prompts.</p>
+                </div>
+            </div>
+            <p style="margin-top:1.5rem;">Orchestrator stays at ~30-40% context utilization. Each executor gets a fresh 200K window with only the relevant plan files — no conversation history passed down.</p>
+        </div>
+    </section>
+
+    <!-- 10: RALPH LOOP -->
+    <section class="light">
+        <span class="section-number">10</span>
+        <div class="slide-content reveal-up">
+            <h2>The <em>Ralph Loop.</em></h2>
+            <img src="mc-bed.png" alt="Respawn Bed" style="height:80px;image-rendering:pixelated;margin-bottom:1rem;">
+            <p>Autonomous iteration via stop hooks. Named after Ralph Wiggum — persistent iteration despite setbacks. <code style="background:rgba(255,61,0,0.15);color:var(--accent);padding:0.15rem 0.5rem;">/spidey</code> is a Ralph Loop — it keeps iterating until the UI matches your intent.</p>
+            <div style="margin:2rem auto;max-width:650px;">
+                <svg viewBox="0 0 650 220" style="width:100%;" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Boxes -->
+                    <rect x="10" y="80" width="120" height="60" rx="6" fill="#ff3d00"/>
+                    <text x="70" y="106" text-anchor="middle" fill="#f5f2eb" font-family="Syne,sans-serif" font-size="11" font-weight="700">PROMPT</text>
+                    <text x="70" y="122" text-anchor="middle" fill="#f5f2eb" font-family="Space Mono,monospace" font-size="8" opacity="0.7">Define task</text>
+
+                    <rect x="170" y="80" width="120" height="60" rx="6" fill="#0a0a0a" stroke="#ff3d00" stroke-width="1.5"/>
+                    <text x="230" y="106" text-anchor="middle" fill="#f5f2eb" font-family="Syne,sans-serif" font-size="11" font-weight="700">EXECUTE</text>
+                    <text x="230" y="122" text-anchor="middle" fill="#f5f2eb" font-family="Space Mono,monospace" font-size="8" opacity="0.7">Fresh 200K window</text>
+
+                    <rect x="330" y="80" width="120" height="60" rx="6" fill="#0a0a0a" stroke="#c6ff00" stroke-width="1.5"/>
+                    <text x="390" y="106" text-anchor="middle" fill="#c6ff00" font-family="Syne,sans-serif" font-size="11" font-weight="700">TESTS PASS?</text>
+                    <text x="390" y="122" text-anchor="middle" fill="#f5f2eb" font-family="Space Mono,monospace" font-size="8" opacity="0.7">Binary check</text>
+
+                    <rect x="510" y="80" width="120" height="60" rx="6" fill="#c6ff00"/>
+                    <text x="570" y="106" text-anchor="middle" fill="#0a0a0a" font-family="Syne,sans-serif" font-size="11" font-weight="700">DONE</text>
+                    <text x="570" y="122" text-anchor="middle" fill="#0a0a0a" font-family="Space Mono,monospace" font-size="8" opacity="0.6">Ship it</text>
+
+                    <!-- Arrows forward -->
+                    <line x1="130" y1="110" x2="165" y2="110" stroke="#f5f2eb" stroke-width="1.5" marker-end="url(#arrowW)"/>
+                    <line x1="290" y1="110" x2="325" y2="110" stroke="#f5f2eb" stroke-width="1.5" marker-end="url(#arrowW)"/>
+                    <!-- Yes arrow -->
+                    <line x1="450" y1="110" x2="505" y2="110" stroke="#c6ff00" stroke-width="1.5" marker-end="url(#arrowG)"/>
+                    <text x="478" y="103" text-anchor="middle" fill="#c6ff00" font-family="Space Mono,monospace" font-size="9">Yes</text>
+
+                    <!-- No loop back -->
+                    <path d="M 390 145 L 390 190 L 230 190 L 230 145" fill="none" stroke="#ff3d00" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowR)"/>
+                    <text x="310" y="205" text-anchor="middle" fill="#ff3d00" font-family="Space Mono,monospace" font-size="9">No → fresh window, try again</text>
+
+                    <!-- Stop hook label -->
+                    <rect x="265" y="170" width="90" height="22" rx="4" fill="#ff3d00" opacity="0.15"/>
+                    <text x="310" y="184" text-anchor="middle" fill="#ff3d00" font-family="Syne,sans-serif" font-size="8" font-weight="700">STOP HOOK</text>
+
+                    <!-- Arrow markers -->
+                    <defs>
+                        <marker id="arrowW" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f5f2eb"/></marker>
+                        <marker id="arrowG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#c6ff00"/></marker>
+                        <marker id="arrowR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#ff3d00"/></marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10b: STOP HOOKS -->
+    <section class="dark">
+        <div class="slide-content reveal-up">
+            <h2>What are <em>stop hooks?</em></h2>
+            <p>Hooks are shell commands that fire in response to Claude Code events. A stop hook intercepts Claude's exit — the mechanism that makes the Ralph Loop possible.</p>
+            <div class="code-block" style="font-size:0.75rem;">
+                <code>
+<span style="color:var(--accent);"># .claude/hooks.json</span><br>
+{<br>
+&nbsp;&nbsp;"hooks": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"Stop": [{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"matcher": "",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"hooks": [{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "command",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"command": "cat PROMPT.md"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}]<br>
+&nbsp;&nbsp;}<br>
+}
+                </code>
+            </div>
+            <p style="margin-top:1.5rem;">When Claude tries to exit, the stop hook fires, feeds the prompt back in, and Claude starts a fresh iteration. The files it changed are still on disk — so each loop builds on the last.</p>
+        </div>
+    </section>
+
+    <!-- 10c: RALPH LOOP STORIES -->
+    <section class="dark">
+        <div class="slide-content reveal-up">
+            <h2>Ralph Loop <em>in the wild.</em></h2>
+            <div class="portal-grid">
+                <div class="portal-card">
+                    <h4>3 months &rarr; a programming language</h4>
+                    <p>Geoffrey Huntley ran Claude in a continuous loop for 3 months and built "Cursed" — a fully compiled GenZ-themed programming language like Go, with keywords like <code style="font-size:0.7rem;">slay</code> for functions and <code style="font-size:0.7rem;">sus</code> for variables. Compiles to macOS, Linux, and Windows via LLVM.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>$297 for $50K of work</h4>
+                    <p>One engineer set up a Ralph Loop before bed. Woke up to 1,100+ commits across 6 repos — including a near-complete port of Browser Use from Python to TypeScript. Total API cost: $297. Traditional contract value: $50,000.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>Fruit Ninja in 1 hour</h4>
+                    <p>A fully functional Fruit Ninja clone — collision detection, scoring, sound effects — built autonomously in 1 hour across 8 context rotations. Zero human guidance after the initial prompt.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>$15K hackathon winner</h4>
+                    <p>Affaan Mustafa built zenith.chat entirely with Claude Code in 8 hours at the Anthropic x Forum Ventures hackathon. Won $15K in API credits. The repo hit 16K GitHub stars and 900K views on X.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUOTE: MCPs Transition -->
+    <section class="accent-bg" style="flex-direction:column;gap:2rem;">
+        <img src="nether-portal.png" alt="Nether Portal" style="height:250px;image-rendering:pixelated;filter:drop-shadow(0 0 30px rgba(138,43,226,0.4));" class="reveal-up">
+        <div class="big-quote no-arrow">
+            Now let's give Steve his portal.
+        </div>
+    </section>
+
+    <!-- 11: MCPs -->
+    <section class="dark">
+        <span class="section-number">11</span>
+        <div class="slide-content reveal-up">
+            <h2>Model Context <em>Protocol.</em></h2>
+            <p>MCPs let Claude interact with external services. Portals to other worlds.</p>
+            <div class="portal-grid">
+                <div class="portal-card">
+                    <h4>n8n</h4>
+                    <p>Create workflows via MCP. Brain dump your process, get a live deployed workflow.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>Notion</h4>
+                    <p>Screenshot an expense, Claude adds it to your tracker. Any page, any database.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>Figma</h4>
+                    <p>Design to code. Read Figma files, generate matching components.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>Playwright</h4>
+                    <p>Browser control. Click, type, screenshot, iterate. Full automation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- n8n MCP + Skills: Leveling Up -->
+    <section class="light">
+        <span class="section-number">12</span>
+        <div class="slide-content reveal-up">
+            <h2>n8n MCP + Skills: <em>the combo.</em></h2>
+            <p>The MCP gives Claude tools. The skills teach Claude how to use them well.</p>
+            <div class="flow-diagram" style="margin:2rem 0;">
+                <div class="flow-node">You: "automate my Stripe→Slack flow"</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-node" style="border-color:var(--accent);">n8n MCP</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-node">Claude gets 525+ node tools</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-node" style="border-color:var(--highlight);">n8n Skills (7 skills)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-node">Claude knows patterns, syntax, validation</div>
+            </div>
+            <div class="portal-grid" style="margin-top:2rem;">
+                <div class="portal-card">
+                    <h4>Without skills</h4>
+                    <p>Claude has the MCP tools but guesses at expression syntax, misconfigures nodes, gets stuck in validation loops.</p>
+                </div>
+                <div class="portal-card" style="border-color:var(--highlight);">
+                    <h4>With skills</h4>
+                    <p>Claude knows {{$json}} syntax, proven workflow patterns, node-specific config, and auto-validates before deploying.</p>
+                </div>
+            </div>
+            <p style="margin-top:1.5rem;font-size:0.85rem;opacity:0.7;">
+                <a href="https://github.com/czlonkowski/n8n-skills" target="_blank" style="color:var(--accent);">github.com/czlonkowski/n8n-skills</a> — 7 skills, 2,653+ templates
+            </p>
+        </div>
+    </section>
+
+    <!-- 13: PERSONAL RECOMMENDATIONS -->
+    <section class="light">
+        <span class="section-number">13</span>
+        <div class="slide-content reveal-up">
+            <h2>My personal <em>recommendations.</em></h2>
+            <p>Three things to get the most out of Claude Code.</p>
+            <div class="cove-acronym">
+                <div class="cove-step">
+                    <div class="cove-letter" style="font-size:2.5rem;">1</div>
+                    <div class="cove-desc">
+                        <h3>Git worktrees & Conductor</h3>
+                        <p>Clone repos or use git worktrees. Run Claude Code from terminal or Conductor — not just the IDE. Parallel workstreams on the same repo without conflicts.</p>
+                    </div>
+                </div>
+                <div class="cove-step">
+                    <div class="cove-letter" style="font-size:2.5rem;">2</div>
+                    <div class="cove-desc">
+                        <h3>--dangerously-skip-permissions</h3>
+                        <p>Run <code style="background:rgba(255,61,0,0.15);color:var(--accent);padding:0.1rem 0.4rem;font-size:0.75rem;">claude --dangerously-skip-permissions</code>. No approval prompts breaking the flow. Essential for autonomous loops. Use in a sandbox.</p>
+                    </div>
+                </div>
+                <div class="cove-step">
+                    <div class="cove-letter" style="font-size:2.5rem;">3</div>
+                    <div class="cove-desc">
+                        <h3>Let it use CLI tools</h3>
+                        <p>Tell Claude to use gcloud CLI, AWS CLI, Supabase CLI, Vercel CLI — whatever's installed. Risky, but allows full end-to-end completion without you copy-pasting between terminals.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 14: MY SKILLS -->
+    <section class="dark" id="my-skills">
+        <span class="section-number">14</span>
+        <div class="slide-content reveal-up">
+            <h2>My <em>skills.</em></h2>
+            <div class="portal-grid">
+                <div class="portal-card">
+                    <h4>/rnv</h4>
+                    <p>CoVe prompting. Wraps any prompt in the 4-stage verification pipeline. Create → Outline → Verify → Emit.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>/spidey</h4>
+                    <p>Generates a full PRD from a one-liner, derives a task plan from it, configures the Ralph loop, then runs autonomously until every acceptance criterion passes.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>/wavybaby</h4>
+                    <p>Meta-orchestrator. Analyzes your task, auto-selects optimal skills + MCPs + CoVe. Lazy prompt in, rigorous output out.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>/steve</h4>
+                    <p>The full stack. Combines GSD's structured project management with Ralph's autonomous execution loop. Generates a PRD, bootstraps .planning/, then runs Ralph until the milestone is complete.</p>
+                </div>
+                <div class="portal-card">
+                    <h4>/herobrine</h4>
+                    <p>Proactive agents that work while you sleep. Schedule autonomous Claude Code instances via macOS launchd. Results delivered to Beeper. Run overnight builds, morning briefings, or recurring research.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GET THE SKILLS -->
+    <section class="light">
+        <div class="slide-content reveal-up" style="text-align:center;">
+            <h2 style="font-family:'Instrument Serif',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:400;margin-bottom:1.5rem;">Get the <em style="color:var(--accent);font-style:italic;">skills.</em></h2>
+            <p style="margin-bottom:2rem;">Click to copy. Paste in your terminal.</p>
+            <div style="display:flex;flex-direction:column;gap:1.5rem;max-width:650px;margin:0 auto;text-align:left;">
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.25rem;">
+                        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent);">/rnv</span>
+                        <span style="font-size:0.7rem;opacity:0.5;">Self-checking code generation</span>
+                    </div>
+                    <p style="font-size:0.75rem !important;opacity:0.7 !important;margin-bottom:0.5rem !important;line-height:1.6 !important;">Wraps any prompt in 4-stage Chain-of-Verification. Claude generates code, decomposes it into verification questions, checks each claim against real docs, then emits corrected output. Use: <code style="background:rgba(255,61,0,0.15);color:var(--accent);padding:0.1rem 0.3rem;font-size:0.7rem;">/rnv "implement stripe checkout"</code></p>
+                    <div class="code-block" style="font-size:0.8rem;cursor:pointer;padding:0.75rem 1.25rem;margin:0;display:flex;align-items:center;justify-content:space-between;" onclick="navigator.clipboard.writeText('npx skills add aaarnv/claude-skills@rnv');this.querySelector('.copy-hint').textContent='Copied!'">
+                        <code style="padding-left:0;">npx skills add aaarnv/claude-skills@rnv</code>
+                        <span class="copy-hint" style="opacity:0.5;font-size:0.65rem;color:var(--accent);white-space:nowrap;">Click to copy</span>
+                    </div>
+                </div>
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.25rem;">
+                        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent);">/spidey</span>
+                        <span style="font-size:0.7rem;opacity:0.5;">Autonomous dev loop</span>
+                    </div>
+                    <p style="font-size:0.75rem !important;opacity:0.7 !important;margin-bottom:0.5rem !important;line-height:1.6 !important;">Give it a one-liner. It interviews you, generates a full PRD, derives a task plan, configures a Ralph loop with circuit breakers, then runs autonomously — visually verifying UI with Playwright after each change. Use: <code style="background:rgba(255,61,0,0.15);color:var(--accent);padding:0.1rem 0.3rem;font-size:0.7rem;">/spidey "build a habit tracker app"</code></p>
+                    <div class="code-block" style="font-size:0.8rem;cursor:pointer;padding:0.75rem 1.25rem;margin:0;display:flex;align-items:center;justify-content:space-between;" onclick="navigator.clipboard.writeText('npx skills add aaarnv/claude-skills@spidey');this.querySelector('.copy-hint').textContent='Copied!'">
+                        <code style="padding-left:0;">npx skills add aaarnv/claude-skills@spidey</code>
+                        <span class="copy-hint" style="opacity:0.5;font-size:0.65rem;color:var(--accent);white-space:nowrap;">Click to copy</span>
+                    </div>
+                </div>
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.25rem;">
+                        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent);">/wavybaby</span>
+                        <span style="font-size:0.7rem;opacity:0.5;">Meta-orchestrator</span>
+                    </div>
+                    <p style="font-size:0.75rem !important;opacity:0.7 !important;margin-bottom:0.5rem !important;line-height:1.6 !important;">Analyzes your task, auto-discovers and installs the best skills from skills.sh, sets up MCP servers, and applies CoVe on non-trivial code. The skill that equips other skills. Use: <code style="background:rgba(255,61,0,0.15);color:var(--accent);padding:0.1rem 0.3rem;font-size:0.7rem;">/wavybaby "add google auth to my next.js app"</code></p>
+                    <div class="code-block" style="font-size:0.8rem;cursor:pointer;padding:0.75rem 1.25rem;margin:0;display:flex;align-items:center;justify-content:space-between;" onclick="navigator.clipboard.writeText('npx skills add aaarnv/claude-skills@wavybaby');this.querySelector('.copy-hint').textContent='Copied!'">
+                        <code style="padding-left:0;">npx skills add aaarnv/claude-skills@wavybaby</code>
+                        <span class="copy-hint" style="opacity:0.5;font-size:0.65rem;color:var(--accent);white-space:nowrap;">Click to copy</span>
+                    </div>
+                </div>
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.25rem;">
+                        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent);">/steve</span>
+                        <span style="font-size:0.7rem;opacity:0.5;">Full autonomous pipeline</span>
+                    </div>
+                    <p style="font-size:0.75rem !important;opacity:0.7 !important;margin-bottom:0.5rem !important;line-height:1.6 !important;">The full stack. Combines wavybaby (tool equipping + CoVe) + GSD (roadmaps, phases, plans, state tracking) + Ralph (autonomous loop). Generates a PRD, bootstraps .planning/, then runs autonomously through every phase until the milestone is complete. Use: <code style="background:rgba(255,61,0,0.15);color:var(--accent);padding:0.1rem 0.3rem;font-size:0.7rem;">/steve "build a SaaS dashboard with billing"</code></p>
+                    <div class="code-block" style="font-size:0.8rem;cursor:pointer;padding:0.75rem 1.25rem;margin:0;display:flex;align-items:center;justify-content:space-between;" onclick="navigator.clipboard.writeText('npx skills add aaarnv/claude-skills@steve');this.querySelector('.copy-hint').textContent='Copied!'">
+                        <code style="padding-left:0;">npx skills add aaarnv/claude-skills@steve</code>
+                        <span class="copy-hint" style="opacity:0.5;font-size:0.65rem;color:var(--accent);white-space:nowrap;">Click to copy</span>
+                    </div>
+                </div>
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.25rem;">
+                        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent);">/herobrine</span>
+                        <span style="font-size:0.7rem;opacity:0.5;">Scheduled autonomous agents</span>
+                    </div>
+                    <p style="font-size:0.75rem !important;opacity:0.7 !important;margin-bottom:0.5rem !important;line-height:1.6 !important;">Run Claude Code on autopilot. Create agents with a name, prompt, and schedule (cron or interval). They execute headlessly via macOS launchd and deliver results to your Beeper. Use for morning briefings, overnight builds, or recurring research. Use: <code style="background:rgba(255,61,0,0.15);color:var(--accent);padding:0.1rem 0.3rem;font-size:0.7rem;">/herobrine create</code></p>
+                    <div class="code-block" style="font-size:0.8rem;cursor:pointer;padding:0.75rem 1.25rem;margin:0;display:flex;align-items:center;justify-content:space-between;" onclick="navigator.clipboard.writeText('npx skills add aaarnv/claude-skills@herobrine');this.querySelector('.copy-hint').textContent='Copied!'">
+                        <code style="padding-left:0;">npx skills add aaarnv/claude-skills@herobrine</code>
+                        <span class="copy-hint" style="opacity:0.5;font-size:0.65rem;color:var(--accent);white-space:nowrap;">Click to copy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUOTE: One More Thing -->
+    <section class="highlight-bg">
+        <div class="big-quote no-arrow">
+            One more thing.
+        </div>
+    </section>
+
+    <!-- 15: HAPPY CODER -->
+    <section class="dark">
+        <span class="section-number">15</span>
+        <div class="slide-content reveal-up" style="text-align:center;">
+            <h2 style="font-size:clamp(3rem,8vw,6rem);margin-bottom:0.5rem;">Happy <em>Coder.</em></h2>
+            <p>Free, open-source mobile client for Claude Code. Code from anywhere.</p>
+            <a href="https://happy.engineering" target="_blank" style="display:block;margin:2rem auto;max-width:700px;">
+                <img src="happy-coder-screenshot.png" alt="Happy Coder website screenshot" style="width:100%;border-radius:12px;border:1px solid rgba(255,255,255,0.1);box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+            </a>
+            <div class="stat-grid" style="margin-top:1.5rem;">
+                <div class="stat-item">
+                    <div class="stat-number">E2E</div>
+                    <div class="stat-label">Encrypted</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">Voice</div>
+                    <div class="stat-label">Coding</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">Push</div>
+                    <div class="stat-label">Notifications</div>
+                </div>
+            </div>
+            <p style="margin-top:1.5rem;font-size:0.85rem;opacity:0.7;">
+                <a href="https://happy.engineering" target="_blank" style="color:var(--accent);">happy.engineering</a> &nbsp;|&nbsp; <code style="background:rgba(255,255,255,0.1);padding:0.2rem 0.5rem;font-size:0.8rem;">npm i -g happy-coder && happy</code>
+            </p>
+        </div>
+    </section>
+
+    <!-- THEO TWEET -->
+    <section class="dark" style="justify-content:center;align-items:center;">
+        <div class="slide-content reveal-up" style="text-align:center;">
+            <img src="end-slide-image.png" alt="Theo tweet about Ralph loops" style="max-width:700px;width:90%;border-radius:12px;border:1px solid rgba(255,255,255,0.1);box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+        </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="cta-section">
+        <img src="mc-ender-dragon.gif" alt="Ender Dragon" class="reveal-up" style="height:120px;image-rendering:pixelated;margin-bottom:1.5rem;">
+        <h2 class="reveal-up">Start <span>Claude Maxxing.</span></h2>
+        <a href="https://docs.anthropic.com/en/docs/claude-code" class="cta-button reveal-up" target="_blank">Read the Docs</a>
+        <div class="decoration circle" style="right: -200px; bottom: -200px;"></div>
+        <div class="decoration circle" style="left: -100px; top: -100px; width: 200px; height: 200px;"></div>
+    </section>
+
+    <!-- BUILT WITH CLAUDE -->
+    <footer style="padding:3rem 2rem;text-align:center;background:var(--ink);border-top:1px solid rgba(255,255,255,0.06);">
+        <p style="font-family:'Space Mono',monospace;font-size:0.75rem;line-height:1.8;color:var(--paper);opacity:0.5;">
+            This entire presentation — every slide, every image, the OG preview, the domain setup, and the deployment — was built with <span style="color:var(--accent);opacity:1;">Claude Code</span> in the terminal.
+        </p>
+    </footer>
+
+    <script>
+        // === HERO LETTER ANIMATION ===
+        document.querySelectorAll('.hero-line').forEach(line => {
+            const text = line.textContent;
+            line.innerHTML = '';
+            [...text].forEach((char, i) => {
+                const span = document.createElement('span');
+                span.className = 'letter';
+                span.textContent = char === ' ' ? '\u00A0' : char;
+                span.style.animationDelay = `${0.6 + i * 0.04}s`;
+                line.appendChild(span);
+            });
+        });
+
+        // === SCROLL PROGRESS BAR ===
+        const progressBar = document.getElementById('scrollProgress');
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            progressBar.style.width = (scrollTop / docHeight * 100) + '%';
+        }, { passive: true });
+
+        // === INTERSECTION OBSERVER ===
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+        document.querySelectorAll('.section-number, .big-quote, .reveal-up, .slide-content, .cove-step').forEach(el => {
+            revealObserver.observe(el);
+        });
+
+        // === CODE BLOCK TYPING CURSOR ===
+        const codeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('typing');
+                    setTimeout(() => entry.target.classList.remove('typing'), 2500);
+                    codeObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        document.querySelectorAll('.code-block').forEach(el => codeObserver.observe(el));
+
+        // === PARALLAX ORBS ON MOUSE ===
+        const hero = document.querySelector('.hero');
+        hero.addEventListener('mousemove', (e) => {
+            const rect = hero.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            hero.querySelectorAll('.orb').forEach((orb, i) => {
+                const speed = (i + 1) * 15;
+                orb.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+
+        // === SECTION NUMBER COUNTER ===
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const num = parseInt(el.textContent);
+                    if (isNaN(num)) return;
+                    let current = 0;
+                    const step = () => {
+                        current++;
+                        el.textContent = String(current).padStart(2, '0');
+                        if (current < num) requestAnimationFrame(step);
+                    };
+                    el.textContent = '00';
+                    requestAnimationFrame(step);
+                    counterObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.section-number').forEach(el => counterObserver.observe(el));
+    </script>
+</body>
+</html>
