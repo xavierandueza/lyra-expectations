@@ -300,6 +300,24 @@
         .light .stat-number { color: var(--blood); }
         .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.6; margin-top: 0.5rem; }
 
+        /* ===== RUN MAP (overview / preview of the whole deck) ===== */
+        .run-map { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(10, auto); grid-auto-flow: column; gap: 0.15rem 2.5rem; margin: 1.5rem 0 0; counter-reset: mapnum; }
+        .map-item {
+            padding: 0.4rem 0.5rem 0.4rem 0.85rem; line-height: 1.45; counter-increment: mapnum;
+            border-left: 2px solid rgba(192,160,90,0.28);
+            transition: border-color 0.25s, background 0.25s, transform 0.25s;
+        }
+        .map-item:hover { border-left-color: var(--gold); background: rgba(192,160,90,0.06); transform: translateX(3px); }
+        .map-item .map-title {
+            font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.76rem;
+            text-transform: uppercase; letter-spacing: 0.03em; color: var(--gold-bright);
+        }
+        .map-item .map-title::before {
+            content: counter(mapnum, decimal-leading-zero); color: var(--gold);
+            margin-right: 0.45rem; opacity: 0.85; font-weight: 800;
+        }
+        .map-item .map-one { font-size: 0.74rem; opacity: 0.6; }
+
         /* ===== PORTAL / CARD GRID ===== */
         .portal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem; }
         .portal-card { border: 1px solid rgba(192,160,90,0.22); padding: 1.5rem; position: relative; }
@@ -356,6 +374,7 @@
         @media (max-width: 768px) {
             section { padding: 4rem 1.5rem; }
             .slide-content { max-width: 100%; }
+            .run-map { grid-template-columns: 1fr; grid-template-rows: none; grid-auto-flow: row; }
             .stat-grid { grid-template-columns: 1fr; }
             .portal-grid { grid-template-columns: 1fr; }
             .phase-row { flex-direction: column; }
@@ -385,6 +404,38 @@
             <div class="boss-bar">
                 <div class="name">The Campaign &middot; Day One</div>
                 <div class="track"><div class="fill"></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== THE MAP · PREVIEW OF THE WHOLE RUN ===== -->
+    <section class="dark">
+        <div class="scene" style="background-image:url('fog-forest.jpg');opacity:0.12;"></div>
+        <div class="scene-veil" style="background:linear-gradient(180deg, rgba(10,9,8,0.82), rgba(10,9,8,0.92));"></div>
+        <div class="slide-content reveal-up" style="max-width:1000px;">
+            <div class="kicker" style="font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.4em;text-transform:uppercase;color:var(--gold-bright);margin-bottom:1rem;">The Map &middot; The whole run at a glance</div>
+            <h2 style="font-size:clamp(2rem,4.5vw,3.4rem);margin-bottom:0.75rem;">The whole <em>run.</em></h2>
+            <p style="margin-bottom:0.25rem;">Every chapter on one screen — skim the road, then we walk it. The <em style="color:var(--gold-bright);font-style:normal;">intensity</em> peaks at the first wall; the <em style="color:var(--gold-bright);font-style:normal;">expectations</em> run the whole contract.</p>
+            <div class="run-map">
+                <div class="map-item"><span class="map-title">Two win conditions</span> <span class="map-one">— happy client + a sustainable you</span></div>
+                <div class="map-item"><span class="map-title">Don't be an NPC</span> <span class="map-one">— a founding engineer, not a ticket-mover</span></div>
+                <div class="map-item"><span class="map-title">Stay plugged in</span> <span class="map-one">— read the industry, watch competitors</span></div>
+                <div class="map-item"><span class="map-title">The first wall</span> <span class="map-one">— the two-week trial; the opening boss</span></div>
+                <div class="map-item"><span class="map-title">Empathise with the founder</span> <span class="map-one">— their money, their dream</span></div>
+                <div class="map-item"><span class="map-title">Mind your stamina</span> <span class="map-one">— hours are a promise; be clockwork</span></div>
+                <div class="map-item"><span class="map-title">Patience over panic</span> <span class="map-one">— output per hour, not more hours</span></div>
+                <div class="map-item"><span class="map-title">Under-promise, over-deliver</span> <span class="map-one">— pad it, then beat it</span></div>
+                <div class="map-item"><span class="map-title">Leave a message</span> <span class="map-one">— communication is seen more than code</span></div>
+                <div class="map-item"><span class="map-title">Party morale</span> <span class="map-one">— be someone people want in the raid</span></div>
+                <div class="map-item"><span class="map-title">Rest at the campfire</span> <span class="map-one">— rituals keep you consistent</span></div>
+                <div class="map-item"><span class="map-title">Don't stand in the fire</span> <span class="map-one">— emergencies = drop everything</span></div>
+                <div class="map-item"><span class="map-title">Into the fog</span> <span class="map-one">— unscoped work is yours to scope</span></div>
+                <div class="map-item"><span class="map-title">Try it solo first</span> <span class="map-one">— earn the right to ask for help</span></div>
+                <div class="map-item"><span class="map-title">Game over</span> <span class="map-one">— you'll mess up; own it instantly</span></div>
+                <div class="map-item"><span class="map-title">Know your build</span> <span class="map-one">— engineer, not vibe coder</span></div>
+                <div class="map-item"><span class="map-title">Ways to get kicked</span> <span class="map-one">— the short list that sinks you</span></div>
+                <div class="map-item"><span class="map-title">The little things</span> <span class="map-one">— cheap habits; don't fumble free points</span></div>
+                <div class="map-item"><span class="map-title">Boss patterns</span> <span class="map-one">— common situations, the move for each</span></div>
             </div>
         </div>
     </section>
@@ -466,9 +517,10 @@
         </div>
     </section>
 
-    <!-- ===== THE FIRST WALL (the trial, as one chapter) ===== -->
+    <!-- ===== 04 · THE FIRST WALL (the trial) ===== -->
     <section class="accent-bg">
         <div class="scene" style="background-image:url('ruins.jpg');opacity:0.16;"></div>
+        <span class="section-number">04</span>
         <div class="slide-content reveal-up" style="text-align:center;">
             <div class="kicker" style="font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.4em;text-transform:uppercase;color:var(--gold-bright);margin-bottom:1rem;">Level 1 &middot; The targeted bit</div>
             <h2 style="text-align:center;">The first <em style="color:var(--gold-bright);background-image:linear-gradient(var(--gold-bright),var(--gold-bright));">wall.</em></h2>
@@ -498,24 +550,19 @@
         </div>
     </section>
 
-    <!-- ===== 04 · EMPATHISE WITH THE FOUNDER ===== -->
+    <!-- ===== 05 · EMPATHISE WITH THE FOUNDER ===== -->
     <section class="light">
-        <span class="section-number">04</span>
+        <span class="section-number">05</span>
         <div class="slide-content reveal-up">
             <h2>Empathise with the <em>founder.</em></h2>
             <p>The single most useful lens. The founder usually took a pay cut to do this. They're spending tens of thousands of dollars on <em style="color:var(--blood);font-style:normal;">you</em>, and they answer to investors and deadlines.</p>
-            <div class="stat-grid">
-                <div class="stat-item"><div class="stat-number">$10Ks</div><div class="stat-label">spent on you</div></div>
-                <div class="stat-item"><div class="stat-number">Pay cut</div><div class="stat-label">they took one to be here</div></div>
-                <div class="stat-item"><div class="stat-number">Investors</div><div class="stat-label">they answer to people too</div></div>
-            </div>
             <p style="margin-top:2rem;font-style:italic;opacity:0.8;">It's their run. Play like a teammate who's there to win it — act how you'd want your engineer to act if it were your money and your dream.</p>
         </div>
     </section>
 
-    <!-- ===== 05 · MIND YOUR STAMINA ===== -->
+    <!-- ===== 06 · MIND YOUR STAMINA ===== -->
     <section class="dark">
-        <span class="section-number">05</span>
+        <span class="section-number">06</span>
         <div class="slide-content reveal-up">
             <h2>Mind your <em>stamina.</em></h2>
             <p>Hours are about output and reliability, not clocking time — but a 50-hour contract is a visible promise. From the client's POV you are <em style="color:var(--gold);font-style:normal;">always</em> doing your contracted hours.</p>
@@ -539,9 +586,9 @@
         </div>
     </section>
 
-    <!-- ===== 06 · PATIENCE OVER PANIC ===== -->
+    <!-- ===== 07 · PATIENCE OVER PANIC ===== -->
     <section class="light">
-        <span class="section-number">06</span>
+        <span class="section-number">07</span>
         <div class="slide-content reveal-up">
             <h2>Patience over <em>panic.</em></h2>
             <p>More hours &ne; better engineer. 10x engineers don't work 400-hour weeks — they often work normal hours. <em style="color:var(--blood);font-style:normal;">Productivity is king: output per hour.</em> Mashing the attack button — flailing more hours — gets you killed. Patience and timing clear the fight.</p>
@@ -555,9 +602,9 @@
         </div>
     </section>
 
-    <!-- ===== 07 · UNDER-PROMISE, OVER-DELIVER ===== -->
+    <!-- ===== 08 · UNDER-PROMISE, OVER-DELIVER ===== -->
     <section class="dark">
-        <span class="section-number">07</span>
+        <span class="section-number">08</span>
         <div class="slide-content reveal-up">
             <h2>Under-promise. <em>Over-deliver.</em></h2>
             <p>If you regularly work past your hours, the fix usually starts at estimation. Don't oversell — it only ends in disappointment. Beating your own deadline reads as far more valuable than hitting some "optimal" estimate.</p>
@@ -572,9 +619,9 @@ quote = honest_estimate * 1.5   <span style="color:var(--blood);"># last 20% eat
         </div>
     </section>
 
-    <!-- ===== 08 · LEAVE A MESSAGE ===== -->
+    <!-- ===== 09 · LEAVE A MESSAGE ===== -->
     <section class="light">
-        <span class="section-number">08</span>
+        <span class="section-number">09</span>
         <div class="slide-content reveal-up">
             <h2>Leave a <em>message.</em></h2>
             <p>Communication is seen more than code — don't measure yourself by lines pushed. In co-op, the players who call things out keep the whole party alive. Same here: <em style="color:var(--blood);font-style:normal;">good signals win.</em></p>
@@ -593,9 +640,9 @@ quote = honest_estimate * 1.5   <span style="color:var(--blood);"># last 20% eat
         </div>
     </section>
 
-    <!-- ===== 09 · PARTY MORALE ===== -->
+    <!-- ===== 10 · PARTY MORALE ===== -->
     <section class="dark">
-        <span class="section-number">09</span>
+        <span class="section-number">10</span>
         <div class="slide-content reveal-up">
             <h2>Party <em>morale.</em></h2>
             <div class="praise-sun">+10 MORALE</div>
@@ -621,9 +668,9 @@ quote = honest_estimate * 1.5   <span style="color:var(--blood);"># last 20% eat
         </div>
     </section>
 
-    <!-- ===== 10 · REST AT THE CAMPFIRE ===== -->
+    <!-- ===== 11 · REST AT THE CAMPFIRE ===== -->
     <section class="light">
-        <span class="section-number">10</span>
+        <span class="section-number">11</span>
         <div class="slide-content reveal-up">
             <h2>Rest at the <em>campfire.</em></h2>
             <img src="bonfire.jpg" alt="Campfire at night" class="scene-img" style="max-height:280px;object-fit:cover;">
@@ -638,10 +685,11 @@ weekly: demo progress · clean up · plan next · share a finding
         </div>
     </section>
 
-    <!-- ===== FIRES · THE VILLAGE IS UNDER ATTACK ===== -->
+    <!-- ===== 12 · FIRES · THE VILLAGE IS UNDER ATTACK ===== -->
     <section class="dark">
         <div class="scene" style="background-image:url('lava-night.jpg');opacity:0.5;"></div>
         <div class="scene-veil" style="background:radial-gradient(100% 100% at 50% 70%, transparent 0%, rgba(5,4,3,0.7) 75%);"></div>
+        <span class="section-number">12</span>
         <div class="slide-content reveal-up" style="text-align:center;">
             <div class="invasion">The village is under attack</div>
             <h2 style="text-align:left;">Don't stand in the <em>fire.</em></h2>
@@ -657,11 +705,11 @@ weekly: demo progress · clean up · plan next · share a finding
         </div>
     </section>
 
-    <!-- ===== 12 · INTO THE FOG ===== -->
+    <!-- ===== 13 · INTO THE FOG ===== -->
     <section class="dark">
         <div class="scene" style="background-image:url('fog-forest.jpg');opacity:0.28;"></div>
         <div class="scene-veil" style="background:linear-gradient(180deg, rgba(10,9,8,0.7), rgba(10,9,8,0.85));"></div>
-        <span class="section-number">12</span>
+        <span class="section-number">13</span>
         <div class="slide-content reveal-up">
             <h2>Into the <em>fog.</em></h2>
             <p>You will get poorly-scoped work — it's the default when a company scales fast. Scoping it is <em style="color:var(--gold);font-style:normal;">your</em> job. Alfie's checklist for any ambiguous or urgent task:</p>
@@ -677,9 +725,9 @@ weekly: demo progress · clean up · plan next · share a finding
         </div>
     </section>
 
-    <!-- ===== 13 · TRY IT SOLO FIRST ===== -->
+    <!-- ===== 14 · TRY IT SOLO FIRST ===== -->
     <section class="light">
-        <span class="section-number">13</span>
+        <span class="section-number">14</span>
         <div class="slide-content reveal-up">
             <h2>Try it <em>solo</em> first.</h2>
             <p>Earn the right to ask for help by showing you tried. Take a crack at it yourself before you call for backup. When you do ask, lead with what you tried.</p>
@@ -694,8 +742,9 @@ weekly: demo progress · clean up · plan next · share a finding
         </div>
     </section>
 
-    <!-- ===== 14 · GAME OVER ===== -->
+    <!-- ===== 15 · GAME OVER ===== -->
     <section class="dark" style="flex-direction:column;gap:1.5rem;">
+        <span class="section-number">15</span>
         <div class="you-died reveal-up">GAME OVER</div>
         <div class="slide-content reveal-up" style="text-align:center;max-width:680px;">
             <p style="font-style:italic;font-size:1.1rem;opacity:0.85;">…Continue? You respawn at the checkpoint. Every death teaches the level.</p>
@@ -711,9 +760,9 @@ weekly: demo progress · clean up · plan next · share a finding
         </div>
     </section>
 
-    <!-- ===== 15 · KNOW YOUR BUILD ===== -->
+    <!-- ===== 16 · KNOW YOUR BUILD ===== -->
     <section class="light">
-        <span class="section-number">15</span>
+        <span class="section-number">16</span>
         <div class="slide-content reveal-up">
             <h2>Know your <em>build.</em></h2>
             <p>You're an engineer, not a vibe coder. Understand what you built — know your build, not just which buttons you mashed. Sometimes you'll explain your approach to technical people. Be ready.</p>
@@ -728,9 +777,9 @@ weekly: demo progress · clean up · plan next · share a finding
         </div>
     </section>
 
-    <!-- ===== 16 · WAYS TO GET KICKED FROM THE PARTY ===== -->
+    <!-- ===== 17 · WAYS TO GET KICKED FROM THE PARTY ===== -->
     <section class="dark">
-        <span class="section-number">16</span>
+        <span class="section-number">17</span>
         <div class="slide-content reveal-up">
             <h2>Ways to get <em>kicked.</em></h2>
             <p>A short, blunt list of things that actively damage you with clients.</p>
@@ -755,9 +804,9 @@ weekly: demo progress · clean up · plan next · share a finding
         </div>
     </section>
 
-    <!-- ===== 17 · THE LITTLE THINGS ===== -->
+    <!-- ===== 18 · THE LITTLE THINGS ===== -->
     <section class="light">
-        <span class="section-number">17</span>
+        <span class="section-number">18</span>
         <div class="slide-content reveal-up">
             <h2>The little <em>things.</em></h2>
             <p>Cheap, high-signal habits. Don't fumble the free points.</p>
@@ -774,9 +823,9 @@ weekly: demo progress · clean up · plan next · share a finding
         </div>
     </section>
 
-    <!-- ===== 18 · BOSS PATTERNS (situational) ===== -->
+    <!-- ===== 19 · BOSS PATTERNS (situational) ===== -->
     <section class="dark">
-        <span class="section-number">18</span>
+        <span class="section-number">19</span>
         <div class="slide-content reveal-up">
             <h2>Boss <em>patterns.</em></h2>
             <p>Recognisable situations, with the move for each.</p>
