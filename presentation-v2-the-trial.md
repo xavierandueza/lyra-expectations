@@ -207,8 +207,11 @@ Reuse map → component from `index.html`: `.hero`, `.flow-diagram`, `.cove-acro
 - **Thrust:** The single most useful lens — feel the founder's stakes and you'll make the right call 90% of the time.
 - **Talking points:**
   - The founder usually took a pay cut to do this. They're spending tens of thousands of dollars on *you*. They answer to investors and deadlines.
-  - You were sold as a founding engineer — they expect that calibre.
-  - Whenever you're unsure how to act or communicate: put yourself in their shoes. How would *you* want your engineer to talk to you if it were your money and your dream on the line?
+  - These guys are unemployed, have a few hundred thousand (which really isn't much) to spend.
+  - Treat it like a uni group project, what would your random international student that lives overseas do.
+  - Communicate actively, every single thing. Over communicate.
+  - Be nice and be proactive with your work
+  - A lot of the stuff will be explained in future slides how to deal with that.
 - **ON SCREEN:**
   - H2: Empathise with the *founder.*
   - Copy carries it: the founder took a pay cut, is spending tens of thousands on *you*, and answers to investors + deadlines. *(The old `.stat-grid` — `$10Ks` / `Pay cut` / `Investors` — was cut; it read as filler and the paragraph already lands the point.)*
